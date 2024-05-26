@@ -1,0 +1,58 @@
+[gd_scene load_steps=7 format=3 uid="uid://ds5xc02lx1hgc"]
+
+[ext_resource type="Script" path="res://scripts/AutoWeaponProjectileHit.cs" id="1_hbh32"]
+[ext_resource type="Material" uid="uid://ch1cfswe6w3fe" path="res://materials/auto_weapon_projectile_hit.tres" id="1_v42id"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_warxy"]
+
+[sub_resource type="Animation" id="Animation_wfut7"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("MeshInstance3D:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_gatlm"]
+resource_name = "main"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("MeshInstance3D:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector3(0.001, 0.001, 0.001), Vector3(0.5, 0.5, 0.5), Vector3(0.001, 0.001, 0.001)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_buywr"]
+_data = {
+"RESET": SubResource("Animation_wfut7"),
+"main": SubResource("Animation_gatlm")
+}
+
+[node name="AutoWeaponProjectileHit" type="Node3D" node_paths=PackedStringArray("animationPlayer")]
+script = ExtResource("1_hbh32")
+animationPlayer = NodePath("AnimationPlayer")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+material_override = ExtResource("1_v42id")
+mesh = SubResource("SphereMesh_warxy")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_buywr")
+}
+autoplay = "main"

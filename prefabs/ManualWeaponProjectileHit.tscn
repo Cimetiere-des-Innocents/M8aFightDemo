@@ -1,0 +1,75 @@
+[gd_scene load_steps=8 format=3 uid="uid://n37r0ixgj8so"]
+
+[ext_resource type="Script" path="res://scripts/ManualWeaponProjectileHit.cs" id="1_14n7h"]
+[ext_resource type="Material" uid="uid://ch1cfswe6w3fe" path="res://materials/auto_weapon_projectile_hit.tres" id="2_k100l"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_lmvmv"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_vccom"]
+
+[sub_resource type="Animation" id="Animation_spk7b"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("MainNode:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_8uuuq"]
+resource_name = "default"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("MainNode:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.4, 0.5),
+"transitions": PackedFloat32Array(0.277393, 1, 1),
+"update": 0,
+"values": [Vector3(0.001, 0.001, 0.001), Vector3(1, 1, 1), Vector3(0.001, 0.001, 0.001)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_ihsmw"]
+_data = {
+"RESET": SubResource("Animation_spk7b"),
+"default": SubResource("Animation_8uuuq")
+}
+
+[node name="ManualWeaponProjectileHit" type="Node3D" node_paths=PackedStringArray("collider", "rangeNode", "animationPlayer")]
+script = ExtResource("1_14n7h")
+collider = NodePath("MainNode/RangeNode/Area3D")
+rangeNode = NodePath("MainNode/RangeNode")
+animationPlayer = NodePath("AnimationPlayer")
+
+[node name="MainNode" type="Node3D" parent="."]
+
+[node name="RangeNode" type="Node3D" parent="MainNode"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="MainNode/RangeNode"]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
+material_override = ExtResource("2_k100l")
+mesh = SubResource("SphereMesh_lmvmv")
+skeleton = NodePath("../../..")
+
+[node name="Area3D" type="Area3D" parent="MainNode/RangeNode"]
+collision_layer = 8
+collision_mask = 4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MainNode/RangeNode/Area3D"]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
+shape = SubResource("SphereShape3D_vccom")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_ihsmw")
+}
+autoplay = "default"

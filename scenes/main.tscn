@@ -1,0 +1,152 @@
+[gd_scene load_steps=21 format=3 uid="uid://cjik8eylkn8oi"]
+
+[ext_resource type="Script" path="res://scripts/Player.cs" id="1_ipkyy"]
+[ext_resource type="Material" uid="uid://bwiio8mye8rgo" path="res://materials/ground.tres" id="1_u3hyt"]
+[ext_resource type="PackedScene" uid="uid://ky7qhl72v15g" path="res://models/aim.blend" id="3_1lilr"]
+[ext_resource type="PackedScene" uid="uid://d3f5hpusaj44t" path="res://prefabs/DeathEffect.tscn" id="3_ekrcb"]
+[ext_resource type="Script" path="res://scripts/EnemyGenerator.cs" id="4_8rxbe"]
+[ext_resource type="Material" uid="uid://cibb6n3cjs1wq" path="res://materials/player.tres" id="4_xgju3"]
+[ext_resource type="PackedScene" uid="uid://cswuv4lbw5s8s" path="res://prefabs/RandomMoveEnemy.tscn" id="5_it5dt"]
+[ext_resource type="Script" path="res://scripts/AutoWeapon.cs" id="5_srg5u"]
+[ext_resource type="PackedScene" uid="uid://c871n0vok5hbw" path="res://prefabs/AutoWeaponProjectile.tscn" id="6_ncsb5"]
+[ext_resource type="Material" uid="uid://cene2t6tg2tos" path="res://materials/auto_weapon_projectile.tres" id="7_oh22d"]
+[ext_resource type="Script" path="res://scripts/ManualWeapon.cs" id="8_sty68"]
+[ext_resource type="PackedScene" uid="uid://k4hn4hs8mjm" path="res://prefabs/ManualWeaponProjectile.tscn" id="9_2hb43"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_bt71o"]
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_ykjcx"]
+data = PackedVector3Array(1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, 1, -1, 0, -1, 1, 0, -1)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_lf8sn"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_q0e0r"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_lgcfv"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_ftsmj"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hft8x"]
+bg_color = Color(0.784314, 0.196078, 0.196078, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_prxsm"]
+bg_color = Color(0.392157, 1, 0.392157, 0.501961)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[node name="Scene" type="Node3D"]
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+transform = Transform3D(1000, 0, 0, 0, 1000, 0, 0, 0, 1000, 0, 0, 0)
+material_override = ExtResource("1_u3hyt")
+mesh = SubResource("PlaneMesh_bt71o")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Ground"]
+collision_mask = 30
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground/StaticBody3D"]
+shape = SubResource("ConcavePolygonShape3D_ykjcx")
+
+[node name="Player" type="Node3D" parent="." node_paths=PackedStringArray("camera", "aim", "visualComponent", "collider", "hpBar", "hpLabel")]
+script = ExtResource("1_ipkyy")
+camera = NodePath("MainCamera")
+aim = NodePath("../Aim")
+visualComponent = NodePath("VisualComponent")
+collider = NodePath("PlayerCollider")
+deathEffect = ExtResource("3_ekrcb")
+hpBar = NodePath("../HPBar")
+hpLabel = NodePath("../HPBar/Label")
+material = ExtResource("4_xgju3")
+
+[node name="MainCamera" type="Camera3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 0.578897, 0.815401, 0, -0.815401, 0.578897, 0, 8.801, 5.32033)
+
+[node name="PlayerCollider" type="CharacterBody3D" parent="Player"]
+collision_layer = 2
+collision_mask = 5
+
+[node name="Shape" type="CollisionShape3D" parent="Player/PlayerCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 0)
+shape = SubResource("CapsuleShape3D_lf8sn")
+
+[node name="VisualComponent" type="Node3D" parent="Player"]
+
+[node name="Body" type="MeshInstance3D" parent="Player/VisualComponent"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 0)
+material_override = ExtResource("4_xgju3")
+mesh = SubResource("CapsuleMesh_q0e0r")
+skeleton = NodePath("../..")
+
+[node name="Head" type="MeshInstance3D" parent="Player/VisualComponent"]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 1, 0, 1.44616, -0.299843)
+material_override = ExtResource("4_xgju3")
+mesh = SubResource("BoxMesh_lgcfv")
+skeleton = NodePath("../..")
+
+[node name="AutoWeapon" type="Node3D" parent="Player/VisualComponent" node_paths=PackedStringArray("enemyGenerator", "sceneRoot", "player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.584177, 2.3935, -0.671745)
+script = ExtResource("5_srg5u")
+enemyGenerator = NodePath("../../../EnemyGenerator")
+sceneRoot = NodePath("../../..")
+projectile = ExtResource("6_ncsb5")
+player = NodePath("../..")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Player/VisualComponent/AutoWeapon"]
+transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 0, 0, 0)
+material_override = ExtResource("7_oh22d")
+mesh = SubResource("SphereMesh_ftsmj")
+
+[node name="ManualWeapon" type="Node3D" parent="Player/VisualComponent" node_paths=PackedStringArray("sceneRoot", "player", "cdBar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.42091, -0.783483)
+script = ExtResource("8_sty68")
+sceneRoot = NodePath("../../..")
+player = NodePath("../..")
+projectile = ExtResource("9_2hb43")
+cdBar = NodePath("../../../CDBar")
+
+[node name="MainLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.0871558, 0.996195, 0, -0.996195, 0.0871558, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Aim" parent="." instance=ExtResource("3_1lilr")]
+
+[node name="EnemyGenerator" type="Node" parent="." node_paths=PackedStringArray("player")]
+script = ExtResource("4_8rxbe")
+player = NodePath("../Player")
+enemy = ExtResource("5_it5dt")
+maxEnemies = 200
+spawnDelay = 0.2
+
+[node name="HPBar" type="ProgressBar" parent="."]
+offset_left = 15.0
+offset_top = 9.0
+offset_right = 296.0
+offset_bottom = 36.0
+theme_override_styles/fill = SubResource("StyleBoxFlat_hft8x")
+show_percentage = false
+
+[node name="Label" type="Label" parent="HPBar"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -11.5
+offset_right = 20.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CDBar" type="ProgressBar" parent="."]
+offset_right = 100.0
+offset_bottom = 16.0
+theme_override_styles/fill = SubResource("StyleBoxFlat_prxsm")
+show_percentage = false
